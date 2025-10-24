@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, FlatList, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 interface ImageListProps {
   images: string[];
@@ -7,14 +7,18 @@ interface ImageListProps {
 }
 
 export default function ImageList({ images, removeImage }: ImageListProps) {
+  const screenWidth = Dimensions.get('window').width;
+  const imageSize = (screenWidth - 70) / 3; 
+
   return (
     <FlatList
       data={images}
       keyExtractor={(item) => item}
+      numColumns={3}
+      contentContainerStyle={styles.list}
       renderItem={({ item }) => (
-          <View style={styles.imageContainer}>
+        <View style={[styles.imageContainer, { width: imageSize, height: imageSize }]}>
           <Image source={{ uri: item }} style={styles.image} />
-
           <Pressable style={styles.closeButton} onPress={() => removeImage(item)}>
             <Text style={styles.closeText}>✕</Text>
           </Pressable>
@@ -25,29 +29,33 @@ export default function ImageList({ images, removeImage }: ImageListProps) {
 }
 
 const styles = StyleSheet.create({
-  imageContainer: { 
-    marginVertical: 8 
+  list: {
+    padding: 4,
+    justifyContent: 'center',
   },
-  image: { 
+  imageContainer: {
+    margin: 4,
+    position: 'relative',
+  },
+  image: {
     width: '100%',
-    height: 300,
-    borderRadius: 8 
+    height: '100%',
+    borderRadius: 8,
   },
   closeButton: {
     position: 'absolute',
-    top: 10,
-    right: 10,
+    top: 6,
+    right: 6,
     backgroundColor: 'rgba(0,0,0,0.6)',
-    borderRadius: 20,
-    width: 30,
-    height: 30,
+    borderRadius: 12,
+    width: 24,
+    height: 24,
     alignItems: 'center',
     justifyContent: 'center',
-    
   },
   closeText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 'bold',
   },
 });

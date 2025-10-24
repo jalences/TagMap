@@ -2,7 +2,6 @@ import { Stack } from "expo-router";
 
 export default function RootLayout() {
   return (
-    // <Stack screenOptions={{ headerShown: false }}>
     <Stack screenOptions={{
         headerStyle: {
           backgroundColor: "#25292e",  
@@ -13,7 +12,7 @@ export default function RootLayout() {
           fontWeight: "bold",
         },
       }}>    
-      <Stack.Screen name="index" options={{ title: "SuperMegaUltraMap" }} />
+      <Stack.Screen  name="index" options={{ headerShown: false}} />
       <Stack.Screen name="marker/[id]" options={{ title: "Детали маркера" }} />
     </Stack>
     

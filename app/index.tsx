@@ -1,9 +1,9 @@
+import Map from '@/components/Map';
+import { MarkerList } from '@/components/MarkerList';
+import { UserMarker } from '@/types';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import Map from '../components/Map';
-import { MarkerList } from '../components/MarkerList';
-import { UserMarker } from '../types';
+import { Alert, StyleSheet, View } from 'react-native';
 
 export default function MapScreen() {
   const [markers, setMarkers] = useState<UserMarker[]>(MarkerList);
@@ -26,14 +26,20 @@ export default function MapScreen() {
   };
 
   const onMarkerPress = (id: string) => {
-    router.push({
+    try {
+      router.push({
       pathname: '/marker/[id]',
       params: { id },
     });
+    console
+    } catch (error) {
+      Alert.alert('Ошибка', 'Маркер не найден');
+      return;
+    }
   };
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} >
       <Map markers={markers} onMapLongPress={onMapLongPress} onMarkerPress={onMarkerPress} />
     </View>
   );

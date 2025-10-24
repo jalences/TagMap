@@ -4,11 +4,11 @@ import { MarkerList } from '@/components/MarkerList';
 import * as ImagePicker from 'expo-image-picker';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Alert, StyleSheet, Text, View } from 'react-native';
 
-export default function MarkerScreen() {
+export default function MarkerDetails() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const index = parseInt(id, 10);
+  const index = parseInt(id);
   const router = useRouter();
 
     const marker = MarkerList.find((m) => m.id === index.toString());
@@ -16,7 +16,7 @@ export default function MarkerScreen() {
     if (!marker) {
     return (
         <View style={styles.container}>
-        <Text>Маркер не найден</Text>
+        <Text style={styles.title}>Маркер не найден :c </Text>
         <Button title="Назад к карте" onPress={() => router.back()} />
         </View>
     );
@@ -41,27 +41,47 @@ const [images, setImages] = useState([...marker.images]);
         setImages([...marker.images]);
       }
     } catch (error) {
+      Alert.alert('Ошибка', 'Произошла ошибка при выборе изображения');
       console.error(error);
     }
   };
 
   const handleRemoveImage = (uri: string) => {
     if (!marker) return;
-        marker.images = marker.images.filter((img) => img !== uri);
-        setImages([...marker.images]);
+        Alert.alert(
+          'Подтвердите удаление',
+          'Вы уверены, что хотите удалить фото?',
+          [
+            {
+              text: 'Отменить',
+              style: 'cancel',
+            },
+            {
+              text: 'Удалить',
+              onPress: () => {
+                marker.images = marker.images.filter((img) => img !== uri);
+                setImages([...marker.images]);
+              },
+            },
+          ],
+          { cancelable: false }
+        )
+        // marker.images = marker.images.filter((img) => img !== uri);
+        // setImages([...marker.images]);
     };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Маркер {index}</Text>
-      <Text style={styles.description}>Описание: {marker.description}</Text>
-      <Text style={styles.coordinate}>Координаты: {marker.coordinate.latitude.toFixed(8)}, {marker.coordinate.longitude.toFixed(8)}</Text>
-     
+      <Text style={styles.description}>Название</Text>
+      <Text style={styles.details}>{marker.title}</Text>
+      <Text style={styles.description}>Описание</Text>
+      <Text style={styles.details}>{marker.description}</Text>
+      <Text style={styles.description}>Координаты</Text>
+      <Text style={styles.details}>{marker.coordinate.latitude.toFixed(8)}, {marker.coordinate.longitude.toFixed(8)}</Text>
 
       <ImageList images={images} removeImage={handleRemoveImage} />
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 40, alignSelf: 'center', marginTop: 10}}>        
-        <Button style={styles.button} title="Добавить фото" variant="primary" onPress={handleAddImage} />
-        {/* <Button style={styles.button} variant="secondary" title="Назад к карте" onPress={() => router.back()} /> */}
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 50, alignSelf: 'center', marginTop: 10}}>        
+        <Button style={styles.button} title="Добавить фото" variant="primary" iconName="picture-o" onPress={handleAddImage} />
       </View>
     </View>
   );
@@ -71,28 +91,30 @@ const styles = StyleSheet.create({
     container: { 
         flex: 1, 
         paddingTop: 20,
-        paddingHorizontal: 30,
+        paddingHorizontal: 20,
         backgroundColor: '#25292e',     
         },
-    title: { 
-        textAlign: 'center',
-        fontSize: 24,
+    title: {
+        fontSize: 20,
         fontWeight: 'bold',
-        marginBottom: 10, 
+        marginBottom: 20,
         color: '#ffffffff',
+        alignSelf: 'center',
+        paddingVertical: 100,
     },
-    coordinate: {
+    details: {
         fontSize: 16,
-        marginBottom: 10,
+        marginBottom: 15,
         color: '#ffffffff',
     },
     description : { 
         fontSize: 16,
-        marginBottom: 10,
-        color: '#ffffffff',
+        marginBottom: 5,
+        fontWeight: 200,
+        color: '#c3c3c3ff',
     },
     button: {
-        
-        maxWidth: '80%',
+        borderRadius: 20,
+        maxWidth: '70%',
     },
 });
