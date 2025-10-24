@@ -3,39 +3,36 @@ import ImageList from '@/components/ImageList';
 import { MarkerList } from '@/components/MarkerList';
 import * as ImagePicker from 'expo-image-picker';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Alert, StyleSheet, Text, View } from 'react-native';
 
 export default function MarkerDetails() {
+  
   const { id } = useLocalSearchParams<{ id: string }>();
-  const index = parseInt(id);
   const router = useRouter();
 
-    const marker = MarkerList.find((m) => m.id === index.toString());
-    console.log(MarkerList);
+  const marker = MarkerList.find((marker) => marker.id === id);
     if (!marker) {
     return (
         <View style={styles.container}>
         <Text style={styles.title}>Маркер не найден :c </Text>
-        <Button title="Назад к карте" onPress={() => router.back()} />
+        <Button title="Вернуться к карте" onPress={() => router.back()} />
         </View>
     );
     }
 
-if (!marker.images) marker.images = [];
-const [images, setImages] = useState([...marker.images]);
-    useEffect(() => {
-        setImages(marker.images);   
-    }, []);
+  
+  const [images, setImages] = useState([...marker.images]);
 
   const handleAddImage = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ['images'],
+        allowsEditing: true,
         quality: 1,
       });
 
-      if (!result.canceled && result.assets.length > 0) {
+      if (!result.canceled) {
         const uri = result.assets[0].uri;
         marker.images.push(uri);
         setImages([...marker.images]);
@@ -47,28 +44,27 @@ const [images, setImages] = useState([...marker.images]);
   };
 
   const handleRemoveImage = (uri: string) => {
-    if (!marker) return;
-        Alert.alert(
-          'Подтвердите удаление',
-          'Вы уверены, что хотите удалить фото?',
-          [
-            {
-              text: 'Отменить',
-              style: 'cancel',
-            },
-            {
-              text: 'Удалить',
-              onPress: () => {
-                marker.images = marker.images.filter((img) => img !== uri);
-                setImages([...marker.images]);
-              },
-            },
-          ],
-          { cancelable: false }
-        )
-        // marker.images = marker.images.filter((img) => img !== uri);
-        // setImages([...marker.images]);
-    };
+    Alert.alert(
+      'Подтвердите удаление',
+      'Вы уверены, что хотите удалить фото?',
+      [
+        {
+          text: 'Отменить',
+          style: 'cancel',
+        },
+        {
+          text: 'Удалить',
+          onPress: () => {
+            marker.images = marker.images.filter((img) => img !== uri);
+            setImages([...marker.images]);
+          },
+        },
+      ],
+      { cancelable: false }
+    )
+      // marker.images = marker.images.filter((img) => img !== uri);
+      // setImages([...marker.images]);
+  };
 
   return (
     <View style={styles.container}>

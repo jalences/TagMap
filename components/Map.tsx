@@ -10,54 +10,49 @@ interface MapProps {
   onMarkerPress: (id: string) => void;
 }
 
-const markerImage = require('../assets/images/kitten150.png');
+
 
 export default function Map({ markers, onMapLongPress, onMarkerPress }: MapProps) {
-  const [mapError, setMapError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-
+  const markerIcon = require('../assets/images/kitten150.png');
+  
   return (
-     <View style={{ flex: 1 }}>
-      {mapError ? (
-        <Text style={styles.text}>Карта не загрузилась. Приносим свои глубочайшие извинения!</Text>
-        
-      ) : (
-       <>
-          {loading && (
-            <View style={styles.text}>
-              <Text style={styles.text}>Загрузка карты...</Text>
-            </View>
-          )}
-      <MapView
-        style={styles.map}
-        initialRegion={{
-          latitude: 57.962143,
-          longitude: 56.187184,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        }}
-        onLongPress={onMapLongPress}
-        onMapReady={() => setLoading(false)}
-      >
-        {markers.map((marker) => (
-          <Marker
-            key={marker.id}
-            coordinate={marker.coordinate}
-            title={marker.title || 'Маркер'}
-            description={marker.description}
-            onPress={() => onMarkerPress(marker.id)}
-            image={markerImage}
-            
-          />
-        ))}
-      </MapView>
-      </>
-      )}
-    </View>
-  );
-}
+      <View style={styles.container}>
+        {loading && (
+          <View style={styles.container}>
+            <Text style={styles.text}>Загрузка карты...</Text>
+          </View>
+        )}
+        <MapView
+          style={styles.map}
+          initialRegion={{
+            latitude: 57.962143,
+            longitude: 56.187184,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}
+          onLongPress={onMapLongPress}
+          onMapReady={() => setLoading(false)}
+        >
+          {markers.map((marker) => (
+            <Marker
+              key={marker.id}
+              coordinate={marker.coordinate}
+              title={marker.title}
+              description={marker.description}
+              onPress={() => onMarkerPress(marker.id)}
+              image={markerIcon}
+            />
+          ))}
+        </MapView>
+      </View>
+    );
+  }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1 
+  },
   map: { flex: 1 },
   text: {
     fontSize: 16,

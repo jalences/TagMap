@@ -1,4 +1,3 @@
-import React from 'react';
 import { Dimensions, FlatList, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 interface ImageListProps {
