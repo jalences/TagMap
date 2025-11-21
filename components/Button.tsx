@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
   },
 
   secondary: {
-    backgroundColor: '#ee6b4d',
+    
   },
   buttonText: {
     color: 'white',

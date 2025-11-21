@@ -1,3 +1,3 @@
-import { UserMarker } from "@/types";
+// import { UserMarker } from "@/types";
 
-export const MarkerList: UserMarker[] = [];
+// export const MarkerList: UserMarker[] = [];

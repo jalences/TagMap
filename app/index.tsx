@@ -1,39 +1,55 @@
 import Map from '@/components/Map';
-import { MarkerList } from '@/components/MarkerList';
-import { UserMarker } from '@/types';
+import { useDatabase } from '@/contexts/DatabaseContext';
+import { Marker } from '@/types';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
+
 
 export default function MapScreen() {
-  const [markers, setMarkers] = useState<UserMarker[]>(MarkerList);
   const router = useRouter();
+  const { markers, addMarker, isLoading } = useDatabase();
 
-  const onMapLongPress = (e: any) => {
-    const newMarker: UserMarker = {
-      id: String(markers.length),
-      coordinate: {
-        latitude: e.nativeEvent.coordinate.latitude,
-        longitude: e.nativeEvent.coordinate.longitude,
-      },
-      title: `Маркер ${markers.length}`,
-      description: 'Новый маркер',
-      images: [],
-    };
+  // useEffect(() => {
+  //   setMarkers(contextMarkers); // Синхронизация при любом изменении в контексте
+  // }, [contextMarkers]);
 
-    setMarkers([...markers, newMarker]);
-    MarkerList.push(newMarker); 
-  };
+//   useEffect(() => {
+//   if (isLoading) return; // ждём инициализации базы
+//   const load = async () => {
+//     try {
+//       const dbMarkers = await getMarkers();
+//       setMarkers(dbMarkers);
+//       console.log(dbMarkers);
+//     } catch (error) {
+//       console.error('Ошибка при получении маркеров:', error);
+//     }
+//   };
+//   load();
+// }, [isLoading]);
 
-  const onMarkerPress = (id: string) => {
-      router.push({
+const onMapLongPress = async (e: any) => {
+  const { latitude, longitude } = e.nativeEvent.coordinate;
+  await addMarker({ latitude, longitude });
+};
+
+  const onMarkerPress = (id: number) => {
+    router.push({
       pathname: '/marker/[id]',
       params: { id },
     });
   };
 
+  if (isLoading) {
+    return (
+      <View style={styles.loader}>
+        <ActivityIndicator size="large" color="#fff" />
+      </View>
+    );
+  }
+
   return (
-    <View style={styles.container} >
+    <View style={styles.container}>
       <Map markers={markers} onMapLongPress={onMapLongPress} onMarkerPress={onMarkerPress} />
     </View>
   );
@@ -41,4 +57,9 @@ export default function MapScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
+  loader: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
