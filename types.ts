@@ -1,21 +1,5 @@
 import * as SQLite from 'expo-sqlite';
 
-export interface UserMarker {
-    id: string;
-    coordinate: {
-        latitude: number;
-        longitude: number;
-    }
-    title?: string;
-    description?: string;
-    images: string[];
-}
-
-export interface MarkerImage {
-  id: number;
-  uri: string;
-}
-
 export interface DatabaseContextType {
     markers: Marker[];
     database: SQLite.SQLiteDatabase | null;
@@ -26,7 +10,7 @@ export interface DatabaseContextType {
     updateMarker: (id: number, title: string | null, description: string | null) => Promise<void>;
     deleteMarker: (id: number) => Promise<void>;
     reloadMarkers: () => Promise<void>;
-    getImages: (marker_id: number) => Promise<MarkerImage[]>;
+    getImages: (marker_id: number) => Promise<Image[]>;
     addImage: (marker_id: number, uri: string) => Promise<void>;
     deleteImage: (id: number) => Promise<void>;
 }

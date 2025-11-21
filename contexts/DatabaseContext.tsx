@@ -11,7 +11,7 @@ import {
   getMarkers as dbGetMarkers,
   updateMarker as dbUpdateMarker
 } from "../db/operations";
-import { Marker, MarkerImage } from "../types";
+import { Marker, Image as MarkerImage } from "../types";
 
 const DatabaseContext = createContext<DatabaseContextType | null>(null);
 
@@ -43,7 +43,7 @@ export const DatabaseProvider: React.FC<DatabaseProviderProps> = ({ children }) 
       setDb(db);
       setIsLoading(false);
     } catch (err: any) {
-      setError(err?.message ?? "Unknown DB error");
+      setError(err?.message ?? "Failed to initialize database");
       setIsLoading(false);
     }
   };
