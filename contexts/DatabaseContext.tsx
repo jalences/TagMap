@@ -15,8 +15,6 @@ import { Marker, Image as MarkerImage } from "../types";
 
 const DatabaseContext = createContext<DatabaseContextType | null>(null);
 
-
-
 export const useDatabase = (): DatabaseContextType => {
     const context = useContext(DatabaseContext);
     if (!context) {
@@ -57,38 +55,40 @@ export const DatabaseProvider: React.FC<DatabaseProviderProps> = ({ children }) 
     }
   }, [isLoading, db]);
 
-    const addMarker = async (marker: Marker) => {
-      if (!db) return;
-        await dbAddMarker(db, marker);
-        await reloadMarkers();
-      };
-
-    const getMarkers = async () => {
-      if (!db) return [];
-        return await dbGetMarkers(db);
-      };
-    const updateMarker = async (id: number, title: string | null, description: string | null) => {
-      if (!db) return;
-        await dbUpdateMarker(db, id, title, description);
-        await reloadMarkers();
-      };
-    const deleteMarker = async (id: number) => {
-      if (!db) return;
-        await dbDeleteMarker(db, id);
-        await reloadMarkers();
-      };
-    
-    const reloadMarkers = async () => {
-      if (!db) return;
-      const dbMarkers = await dbGetMarkers(db);
-      setMarkers(dbMarkers);
+  const addMarker = async (marker: Marker) => {
+    if (!db) return;
+      await dbAddMarker(db, marker);
+      await reloadMarkers();
     };
 
+  const getMarkers = async () => {
+    if (!db) return [];
+      return await dbGetMarkers(db);
+    };
+
+  const updateMarker = async (id: number, title: string | null, description: string | null) => {
+    if (!db) return;
+      await dbUpdateMarker(db, id, title, description);
+      await reloadMarkers();
+    };
+    
+  const deleteMarker = async (id: number) => {
+    if (!db) return;
+      await dbDeleteMarker(db, id);
+      await reloadMarkers();
+    };
+  
+  const reloadMarkers = async () => {
+    if (!db) return;
+    const dbMarkers = await dbGetMarkers(db);
+    setMarkers(dbMarkers);
+  };
+
   const getImages = async (marker_id: number): Promise<MarkerImage[]> => {
-  if (!db) return [];
-  const dbImages = await dbGetImages(db, marker_id); 
-  return dbImages as MarkerImage[]; 
-};
+    if (!db) return [];
+    const dbImages = await dbGetImages(db, marker_id); 
+    return dbImages as MarkerImage[]; 
+  };
 
   const addImage = async (marker_id: number, uri: string) => {
     if (!db) return;
@@ -99,7 +99,6 @@ export const DatabaseProvider: React.FC<DatabaseProviderProps> = ({ children }) 
     if (!db) return;
     await dbDeleteImage(db, id);
   };
-
 
    const contextValue: DatabaseContextType = {
     database: db,

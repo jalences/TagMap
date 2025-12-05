@@ -31,11 +31,7 @@ export const addMarker = async (db: SQLite.SQLiteDatabase, marker: Marker) => {
   }
 };
 
-export const updateMarker = async (
-  db: SQLite.SQLiteDatabase,
-  id: number,
-  title: string | null,
-  description: string | null
+export const updateMarker = async (db: SQLite.SQLiteDatabase, id: number, title: string | null, description: string | null
 ) => {
   try {
     await db.runAsync(
@@ -69,10 +65,7 @@ export const getImages = async (db: SQLite.SQLiteDatabase, marker_id: number) =>
   }
 };
 
-export const addImage = async (
-  db: SQLite.SQLiteDatabase,
-  marker_id: number,
-  uri: string
+export const addImage = async (db: SQLite.SQLiteDatabase, marker_id: number, uri: string
 ) => {
   try {
     await db.runAsync("INSERT INTO marker_images (marker_id, uri) VALUES (?, ?)", [

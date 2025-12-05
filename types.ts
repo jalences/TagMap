@@ -16,7 +16,7 @@ export interface DatabaseContextType {
 }
 
 export type Marker = {
-    id?: number;
+    id: number;
     title?: string;
     description?: string;
     latitude: number;

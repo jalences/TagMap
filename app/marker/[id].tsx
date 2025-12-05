@@ -16,15 +16,15 @@ export default function MarkerDetails() {
   const [description, setDescription] = useState('');
   const [images, setImages] = useState<MarkerImage[]>([]);
 
-   useEffect(() => {
+  useEffect(() => {
     if (marker) {
       setTitle(marker.title ?? '');
       setDescription(marker.description ?? '');
       const loadImages = async () => {
-      const imgs = await getImages(marker.id!);
-      setImages(imgs);
-    };
-    loadImages();
+        const images = await getImages(marker.id!);
+        setImages(images);
+      };
+      loadImages();
     }
   }, [marker]);
 
@@ -37,48 +37,77 @@ export default function MarkerDetails() {
   }
 
   const handleSave = async () => {
-    await updateMarker(marker.id!, title || null, description || null);
-    router.back();
+    if (!marker.id) return; 
+
+    try {
+      await updateMarker(marker.id, title || null, description || null);
+      console.log('Маркер успешно обновлён');
+      router.back();
+    } catch (error) {
+      console.error('Ошибка при сохранении маркера:', error);
+      Alert.alert('Ошибка', 'Не удалось сохранить маркер');
+    }
   };
 
   const handleDelete = async () => {
-    await deleteMarker(marker.id!);
-    router.back();
+    if (!marker.id) return;
+
+    Alert.alert(
+      'Удаление маркера',
+      'Вы точно хотите удалить этот маркер?',
+      [
+        { text: 'Отмена', style: 'cancel' },
+        {
+          text: 'Удалить',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await deleteMarker(marker.id!);
+              console.log('Маркер удален')
+              router.back();
+            } catch (error) {
+              console.error('Ошибка при удалении маркера:', error);
+              Alert.alert('Ошибка', 'Не удалось удалить маркер');
+            }
+          },
+        },
+      ]
+    );
   };
 
-const handleAddImage = async () => {
-  if (!marker?.id) return;
-  try {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      allowsEditing: true,
-      quality: 1,
-    });
+  const handleAddImage = async () => {
+    if (!marker.id) return;
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        allowsEditing: true,
+        quality: 1,
+      });
 
-    if (!result.canceled) {
-      const uri = result.assets[0].uri;
-      await addImage(marker.id, uri);
-      const imgs = await getImages(marker.id);
-      setImages(imgs); 
+      if (!result.canceled) {
+        const uri = result.assets[0].uri;
+        await addImage(marker.id, uri);
+        const imgs = await getImages(marker.id);
+        setImages(imgs); 
+      }
+    } catch (error) {
+      Alert.alert('Ошибка', 'Произошла ошибка при выборе изображения');
+      console.error(error);
     }
-  } catch (error) {
-    Alert.alert('Ошибка', 'Произошла ошибка при выборе изображения');
-    console.error(error);
-  }
-};
+  };
+
   const handleRemoveImage = async (imageId: number) => {
-  if (!marker?.id) return;             
-  try {
-    await deleteImage(imageId);          
-    const imgs = await getImages(marker.id); 
-    setImages(imgs);                     
-  } catch (error) {
-    console.error('Ошибка при удалении изображения:', error);
-  }
-};
+    if (!marker.id) return;             
+    try {
+      await deleteImage(imageId);          
+      const imgs = await getImages(marker.id); 
+      setImages(imgs);                     
+    } catch (error) {
+      console.error('Ошибка при удалении изображения:', error);
+    }
+  };
 
   return (
-    
     <View style={styles.container}>
       <Text style={styles.label}>Название:</Text>
       <TextInput
@@ -103,7 +132,8 @@ const handleAddImage = async () => {
         images={images.map(img => img.uri)}  
         removeImage={(uri) => {
           const imgToRemove = images.find(img => img.uri === uri);
-          if (imgToRemove?.id) handleRemoveImage(imgToRemove.id);
+          if (imgToRemove?.id) 
+            handleRemoveImage(imgToRemove.id);
         }}
         addImage={handleAddImage}
       />

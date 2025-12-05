@@ -10,28 +10,11 @@ export default function MapScreen() {
   const router = useRouter();
   const { markers, addMarker, isLoading } = useDatabase();
 
-  // useEffect(() => {
-  //   setMarkers(contextMarkers); // Синхронизация при любом изменении в контексте
-  // }, [contextMarkers]);
 
-//   useEffect(() => {
-//   if (isLoading) return; // ждём инициализации базы
-//   const load = async () => {
-//     try {
-//       const dbMarkers = await getMarkers();
-//       setMarkers(dbMarkers);
-//       console.log(dbMarkers);
-//     } catch (error) {
-//       console.error('Ошибка при получении маркеров:', error);
-//     }
-//   };
-//   load();
-// }, [isLoading]);
-
-const onMapLongPress = async (e: any) => {
-  const { latitude, longitude } = e.nativeEvent.coordinate;
-  await addMarker({ latitude, longitude });
-};
+  const onMapLongPress = async (e: any) => {
+    const { latitude, longitude } = e.nativeEvent.coordinate;
+    await addMarker({ latitude, longitude });
+  };
 
   const onMarkerPress = (id: number) => {
     router.push({
