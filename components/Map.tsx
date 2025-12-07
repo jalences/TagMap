@@ -7,9 +7,10 @@ interface MapProps {
   markers: MarkerType[];
   onMapLongPress: (e: any) => void;
   onMarkerPress: (id: number) => void;
+  userLocation?: { latitude: number; longitude: number } | null;
 }
 
-export default function Map({ markers, onMapLongPress, onMarkerPress }: MapProps) {
+export default function Map({ markers, onMapLongPress, onMarkerPress, userLocation }: MapProps) {
   const [loading, setLoading] = useState(true);
   const markerIcon = require('../assets/images/kitten150.png');
 
@@ -23,16 +24,17 @@ export default function Map({ markers, onMapLongPress, onMarkerPress }: MapProps
 
       <MapView
         style={styles.map}
+        showsUserLocation={true}    
+        followsUserLocation={true}   
         initialRegion={{
-          latitude: 57.962143,
-          longitude: 56.187184,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
+          latitude: userLocation?.latitude ?? 57.962143,
+          longitude: userLocation?.longitude ?? 56.187184,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
         }}
         onLongPress={onMapLongPress}
         onMapReady={() => setLoading(false)}
       >
-        
         {markers.map((marker) => (
           <Marker
             key={marker.id}

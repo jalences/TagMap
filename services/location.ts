@@ -13,7 +13,7 @@ export const startLocationUpdates = async (
   return await Location.watchPositionAsync(
     {
       accuracy: Location.Accuracy.Balanced,
-      timeInterval: 5000,
+      timeInterval: 1000,
       distanceInterval: 5,
     },
     onLocation

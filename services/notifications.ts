@@ -1,45 +1,41 @@
 import * as Notifications from "expo-notifications";
 import { Marker } from "../types";
 
-export interface ActiveNotification {
-  markerId: number;
-  notificationId: string;
-  timestamp: number;
-}
-
 export class NotificationManager {
-  private activeNotifications = new Map<number, ActiveNotification>();
+  private activeNotifications = new Map<number, any>();
 
-  async requestPermissions() {
-    const settings = await Notifications.requestPermissionsAsync();
-    if (!settings.granted) {
-      throw new Error("Разрешение на уведомления не выдано");
+  async requestPermissions(): Promise<void> {
+    const status = await Notifications.getPermissionsAsync();
+    if (!status.granted) {
+      const req = await Notifications.requestPermissionsAsync();
+      if (!req.granted) {
+        throw new Error("Разрешение на уведомления не выдано");
+      }
     }
   }
 
-  async showNotification(marker: Marker) {
+  async showNotification(marker: Marker, distance: number) {
+    if (marker.id == null) return;
     if (this.activeNotifications.has(marker.id)) return;
 
-    const notificationId = await Notifications.scheduleNotificationAsync({
+    const id = await Notifications.scheduleNotificationAsync({
       content: {
-        title: "Вы рядом с меткой!",
-        body: marker.title || "Вы находитесь рядом с сохранённой точкой.",
+        title: marker.title
+        ? `Вы рядом с «${marker.title}»`
+        : "Вы рядом с меткой!",
+        body: `${distance.toFixed(0)} м от вас`
       },
       trigger: null,
     });
 
-    this.activeNotifications.set(marker.id, {
-      markerId: marker.id,
-      notificationId,
-      timestamp: Date.now(),
-    });
+    this.activeNotifications.set(marker.id, id);
   }
 
   async removeNotification(markerId: number) {
-    const stored = this.activeNotifications.get(markerId);
-    if (!stored) return;
+    const notificationId = this.activeNotifications.get(markerId);
+    if (!notificationId) return;
 
-    await Notifications.cancelScheduledNotificationAsync(stored.notificationId);
+    await Notifications.dismissNotificationAsync(notificationId);
     this.activeNotifications.delete(markerId);
   }
 }
